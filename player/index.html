@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="asciinema-player.css" />
+</head>
+<body>
+<div id="demo"></div>
+<script src="asciinema-player.min.js"></script>
+<script>
+    AsciinemaPlayer.create('cast/hurlp3.cast', document.getElementById('demo'), {
+        cols: 100,
+        rows: 30,
+        fit: false,
+        terminalFontSize: "17px",
+        theme: "asciinema",
+        }
+    );
+</script>
+</body>
+</html>
