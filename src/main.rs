@@ -29,7 +29,7 @@ fn main() {
             Job::new(name, Duration::from_secs(duration), count, seq, last_seq)
         })
         .collect::<Vec<_>>();
-    let worker_count = 2;
+    let worker_count = 5;
     let mut runner = ParallelRunner::new(worker_count);
     let _ = runner.run(&jobs);
 }
