@@ -1,20 +1,82 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Hurl parallel output design">
+    <title>Hurl parallel output design</title>
     <link rel="stylesheet" type="text/css" href="asciinema-player.css" />
+    <style>
+        .player {
+            width: 600px;
+            margin: 20px;
+        }
+        .d-flex {
+            display: flex;
+        }
+    </style>
 </head>
 <body>
-<div id="demo"></div>
+
+<h2>1. Hurl 4.2.0 test output</h2>
+
+<div class="player" data-file="cast/hurl.cast"></div>
+
+<h2>2. Hurl parallel test output with 5 workers</h2>
+
+<p>
+    <ul>
+        <li>5 workers</li>
+        <li>Workers are prefixed by the worker id (1, 2, 3, etc..)</li>
+        <li>Progress bar: right or left?</li>
+        <li>Worker with no jobs stay displayed or not ("Idle")?</li>
+        <li>Do we have to display the full running path, or just keep the filename?</li>
+    </ul>
+</p>
+
+<div class="d-flex">
+    <div class="player" data-file="cast/hurlp0.cast"></div>
+    <div class="player" data-file="cast/hurlp1.cast"></div>
+</div>
+
+<h2>3. Hurl parallel test output with 1 workers</h2>
+
+<p>
+    <ul>
+        <li>Parallel output with 1 worker vs Hurl 4.20</li>
+    </ul>
+</p>
+
+<div class="d-flex">
+    <div class="player" data-file="cast/hurlp2.cast"></div>
+    <div class="player" data-file="cast/hurl.cast"></div>
+</div>
+
+<h2>4. Hurl parallel test output with 2 workers</h2>
+
+<div class="player" data-file="cast/hurlp3.cast"></div>
+
+<h2>TODO</h2>
+
+<ul>
+    <li>Limit the number of displayed worker?</li>
+</ul>
+
+
 <script src="asciinema-player.min.js"></script>
 <script>
-    AsciinemaPlayer.create('cast/hurlp3.cast', document.getElementById('demo'), {
-        cols: 100,
-        rows: 30,
-        fit: false,
-        terminalFontSize: "17px",
-        theme: "asciinema",
-        }
-    );
+
+    const players = document.querySelectorAll(".player")
+    players.forEach((p) => {
+        const file = p.dataset.file;
+        AsciinemaPlayer.create(file, p, {
+                cols: 100,
+                rows: 30,
+                fit: "width",
+                theme: "asciinema",
+            }
+        );
+    });
 </script>
 </body>
 </html>
