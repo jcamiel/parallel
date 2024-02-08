@@ -79,7 +79,7 @@ impl ParallelRunner {
                 }
             }
 
-            term.print_progress(&self.workers)
+            term.print_progress(&self.workers, results.len(), jobs_count)
         }
         results
     }

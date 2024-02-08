@@ -7,7 +7,7 @@ pub struct Job {
     pub requests_count: usize,
     pub name: String,
 
-    pub seq: usize, // the job index in the jobs list
+    pub seq: usize,      // the job index in the jobs list
     pub last_seq: usize, // the last index in the jobs list
 }
 
@@ -15,7 +15,13 @@ pub struct Job {
 pub struct JobResult;
 
 impl Job {
-    pub fn new(name: &str, duration: Duration, requests_count: usize, seq: usize, last_seq: usize) -> Self {
+    pub fn new(
+        name: &str,
+        duration: Duration,
+        requests_count: usize,
+        seq: usize,
+        last_seq: usize,
+    ) -> Self {
         Job {
             name: name.to_string(),
             duration,

@@ -1,6 +1,6 @@
 use crate::job::Job;
 use crate::runner::WorkerState;
-use crate::worker::Worker;
+use crate::worker::{Progress, Worker};
 use colored::Colorize;
 
 pub struct Term {
@@ -9,9 +9,7 @@ pub struct Term {
 
 impl Term {
     pub fn new() -> Self {
-        Term {
-            lines: 0,
-        }
+        Term { lines: 0 }
     }
 
     pub fn clear_progress(&self) {
@@ -25,33 +23,51 @@ impl Term {
         eprintln!("{job}: {state} ({requests_count} request(s) in x ms)");
     }
 
-    pub fn print_progress(&mut self, states: &[(Worker, WorkerState)]) {
+    /// Prints the progress bar with the workers `states`.
+    pub fn print_progress(
+        &mut self,
+        states: &[(Worker, WorkerState)],
+        completed: usize,
+        count: usize,
+    ) {
         self.lines = 0;
-        for (i, (_, state)) in states.iter().enumerate() {
+
+        // Computes maximum size of the string "[current request] / [nb of request]" to
+        // left align th column.
+        let max = states
+            .iter()
+            .map(|(_, state)| match state {
+                WorkerState::Idle => 0,
+                WorkerState::Running(_, Progress { end, .. }) => {
+                    ((*end as f64).log10() as usize) + 1
+                }
+            })
+            .max()
+            .unwrap();
+        let max_width = 2 * max + 1;
+
+        let percent = (completed as f64 * 100.0 / count as f64) as usize;
+        eprintln!("Executed files: {completed}/{count} ({percent}%)");
+        self.lines += 1;
+
+        for (_, state) in states.iter() {
             match state {
-                // WorkerState::Idle => {
-                //     eprintln!("#{} -: Idle", i + 1);
-                //     self.lines += 1;
-                // },
-                WorkerState::Idle => { },
+                WorkerState::Idle => {}
                 WorkerState::Running(job, progress) => {
                     let name = job.name.bold();
                     let state = String::from("Running").cyan().bold();
-                    let worker_id = i + 1;
-                    let seq = job.seq + 1;
-                    let last_seq = job.last_seq + 1;
                     let cur = progress.cur;
                     let end = progress.end;
                     let progress_str = progress_string(cur, end);
-                    eprintln!("#{worker_id} {progress_str} {name}: {state} [{seq}/{last_seq}]");
-                    // eprintln!("#{worker_id} {name}: {state} [{seq}/{last_seq}] {progress_str}");
+                    let requests = format!("{cur}/{end}");
+                    let padding = " ".repeat(max_width - requests.len());
+                    eprintln!("{progress_str} {requests}{padding} {name}: {state}");
                     self.lines += 1;
                 }
             }
         }
     }
 }
-
 
 fn progress_string(cur: usize, end: usize) -> String {
     const WIDTH: usize = 24;
@@ -63,5 +79,5 @@ fn progress_string(cur: usize, end: usize) -> String {
         String::new()
     };
     let void = " ".repeat(WIDTH - col - 1);
-    format!("[{completed}>{void}] {cur}/{end}")
+    format!("[{completed}>{void}]")
 }
